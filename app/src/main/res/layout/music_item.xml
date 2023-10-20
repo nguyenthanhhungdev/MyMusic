@@ -58,7 +58,10 @@
         android:layout_centerVertical="true"
         android:textSize="14sp"
         android:layout_toStartOf="@+id/playButton"
+        android:paddingStart="20dp"
+        android:paddingBottom="30dp"
         android:paddingEnd="10dp"
+        android:textColor="@color/white"
         />
 
     <ImageButton
