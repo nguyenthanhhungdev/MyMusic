@@ -1,7 +1,5 @@
 package com.example.mymusic;
 
-import static com.example.mymusic.PlayActivity.mediaPlayer;
-
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
@@ -20,11 +18,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
-    private Context context; // biến để truy cập tới các dữ liệu của giao diện hiện tại
-    private ArrayList<MusicFiles> musicFiles;
-    private Thread playThread;
-    private Uri uri;
+    private final Context context; // biến để truy cập tới các dữ liệu của giao diện gọi tới
+    private final ArrayList<MusicFiles> musicFiles;
     private MediaPlayer mediaPlayer;
+    private MyViewHolder myViewHolder;
 
     public MusicAdapter(Context context, ArrayList<MusicFiles> musicFiles) {
         this.context = context;
@@ -35,13 +32,14 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.music_item, parent, false);
+        myViewHolder = new MyViewHolder(view);
         return new MyViewHolder(view);
     }
 
     //    Gán dữ liệu từ thành phần giao diện vào ViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        uri = Uri.parse(musicFiles.get(position).getPath());
+        Uri uri = Uri.parse(musicFiles.get(position).getPath());
         mediaPlayer = MediaPlayer.create(context, uri);
 
         String title = musicFiles.get(position).getTitle();
@@ -50,6 +48,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         String s_position = String.valueOf(position);
         holder.getNumTextView().setText(s_position);
 
+        holder.getButton().setTag(R.drawable.baseline_play_arrow);
         try {
             byte[] image = getSongImage(musicFiles.get(position).getPath());
             if (image != null) {
@@ -87,13 +86,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     }
 
     private void playThreadBtn(MyViewHolder holder) {
-        playThread = new Thread() {
+        Thread playThread = new Thread() {
             @Override
             public void run() {
                 super.run();
-                holder.getButton().setOnClickListener(e -> {
-                    playPauseBtnClicked(holder);
-                });
+                holder.getButton().setOnClickListener(e -> playPauseBtnClicked(holder));
             }
         };
         playThread.start();
@@ -101,12 +98,17 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     private void playPauseBtnClicked(MyViewHolder holder) {
         if (mediaPlayer.isPlaying()) {
-            holder.getButton().setImageResource(R.drawable.baseline_play_arrow);
+                if (Integer.parseInt(myViewHolder.getButton().getTag().toString()) == R.drawable.baseline_pause){
+                    myViewHolder.getButton().setImageResource(R.drawable.baseline_play_arrow);
+                    myViewHolder.getButton().setTag(R.drawable.baseline_play_arrow);
+                }
             mediaPlayer.pause();
         } else {
             holder.getButton().setImageResource(R.drawable.baseline_pause);
+            holder.getButton().setTag(R.drawable.baseline_pause);
             mediaPlayer.start();
         }
+        myViewHolder = holder;
     }
 
 
@@ -125,11 +127,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         retriever.setDataSource(uri);
         byte[] image = retriever.getEmbeddedPicture();
         retriever.release();
+        retriever.close();
         return image;
     }
 
     public String milliSecondsToTimer(long milliseconds) {
-        String finalTimerString = "";
+        String finalTimerString;
         String secondsString;
 
         // Chuyển đổi tổng số milliseconds thành số giây

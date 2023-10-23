@@ -36,6 +36,8 @@
         android:textSize="15sp"
         android:textColor="@color/white"
         android:ellipsize="end"
+        android:maxLines="1"
+        android:maxHeight="10dp"
         ></TextView>
 
     <TextView
@@ -44,7 +46,7 @@
         android:layout_toEndOf="@+id/imageView"
         android:layout_below="@id/nameSongTextView"
         android:id="@+id/otherTextView"
-        android:textSize="12dp"
+        android:textSize="12sp"
         android:textColor="@color/white"
         android:text="Other infor"
         android:layout_marginTop="8dp"
@@ -70,5 +72,6 @@
         android:layout_alignParentEnd="true"
         android:id="@+id/playButton"
         android:background="@drawable/rounded_corner_tim"
-        android:src="@drawable/baseline_play_arrow"/>
+        android:src="@drawable/baseline_play_arrow"
+        />
 </RelativeLayout>
