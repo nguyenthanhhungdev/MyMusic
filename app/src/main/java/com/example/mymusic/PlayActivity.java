@@ -69,6 +69,7 @@ public class PlayActivity extends AppCompatActivity {
                     seekBar.setProgress(currentPosition);
                     durationPlayed.setText(formattedTimer(currentPosition));
                 }
+//                Sau 1 khoảng thời gian thì gửi luồng này tới luồng giao diện
                 handler.postDelayed(this, 1000);
             }
         });

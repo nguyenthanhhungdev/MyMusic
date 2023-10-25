@@ -1,5 +1,6 @@
 package com.example.mymusic;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
@@ -20,8 +21,11 @@ import java.util.ArrayList;
 public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private final Context context; // biến để truy cập tới các dữ liệu của giao diện gọi tới
     private final ArrayList<MusicFiles> musicFiles;
-    private MediaPlayer mediaPlayer;
-    private MyViewHolder myViewHolder;
+    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private MyViewHolder oldViewHolder;
+    private Thread playThread;
+    private Uri uri;
+    private int playingPosition = -1;
 
     public MusicAdapter(Context context, ArrayList<MusicFiles> musicFiles) {
         this.context = context;
@@ -32,15 +36,13 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.music_item, parent, false);
-        myViewHolder = new MyViewHolder(view);
+        oldViewHolder = new MyViewHolder(view);
         return new MyViewHolder(view);
     }
 
     //    Gán dữ liệu từ thành phần giao diện vào ViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Uri uri = Uri.parse(musicFiles.get(position).getPath());
-        mediaPlayer = MediaPlayer.create(context, uri);
 
         String title = musicFiles.get(position).getTitle();
         holder.getNameTextView().setText(title);
@@ -48,7 +50,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         String s_position = String.valueOf(position);
         holder.getNumTextView().setText(s_position);
 
-        holder.getButton().setTag(R.drawable.baseline_play_arrow);
+//        holder.getButton().setTag(R.drawable.baseline_play_arrow);
         try {
             byte[] image = getSongImage(musicFiles.get(position).getPath());
             if (image != null) {
@@ -76,39 +78,67 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         String duration = milliSecondsToTimer(Long.parseLong(musicFiles.get(position).getDuration()));
         holder.getDurationTextView().setText(duration);
 
-        playThreadBtn(holder);
+        playThreadBtn(holder, position);
 
         holder.itemView.setOnClickListener(e -> {
             Intent intent = new Intent(context, PlayActivity.class);
             intent.putExtra("position", position);
             context.startActivity(intent);
         });
+
     }
 
-    private void playThreadBtn(MyViewHolder holder) {
-        Thread playThread = new Thread() {
+    private void playThreadBtn(MyViewHolder holder, int position) {
+        playThread = new Thread() {
             @Override
             public void run() {
                 super.run();
-                holder.getButton().setOnClickListener(e -> playPauseBtnClicked(holder));
+                holder.getButton().setOnClickListener(e -> {
+                    playPauseBtnClicked(holder, position);
+                });
             }
         };
         playThread.start();
     }
 
-    private void playPauseBtnClicked(MyViewHolder holder) {
-        if (mediaPlayer.isPlaying()) {
-                if (Integer.parseInt(myViewHolder.getButton().getTag().toString()) == R.drawable.baseline_pause){
-                    myViewHolder.getButton().setImageResource(R.drawable.baseline_play_arrow);
-                    myViewHolder.getButton().setTag(R.drawable.baseline_play_arrow);
-                }
-            mediaPlayer.pause();
+    private void playPauseBtnClicked(MyViewHolder holder, int currentPosition) {
+        uri = Uri.parse(musicFiles.get(currentPosition).getPath());
+
+        // Kiểm tra xem có bài hát nào đang phát không
+        boolean isPlaying = mediaPlayer.isPlaying();
+
+        if (isPlaying) {
+            // Nếu có bài hát đang phát
+            if (playingPosition != currentPosition) {
+                // Dừng bài hát hiện tại
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = MediaPlayer.create(context, uri);
+                mediaPlayer.start();
+            } else {
+                // Dừng bài hát hiện tại nếu đang phát
+                mediaPlayer.pause();
+            }
         } else {
-            holder.getButton().setImageResource(R.drawable.baseline_pause);
-            holder.getButton().setTag(R.drawable.baseline_pause);
+            // Nếu không có bài hát nào đang phát
+            if (playingPosition != currentPosition) {
+                // Nếu bài hát hiện tại khác với bài hát trước đó, tạo mới MediaPlayer
+                mediaPlayer = MediaPlayer.create(context, uri);
+            }
             mediaPlayer.start();
         }
-        myViewHolder = holder;
+
+        // Cập nhật giao diện
+        if (isPlaying || playingPosition != currentPosition) {
+            // Nếu có bài hát đang phát hoặc bài hát hiện tại khác với bài hát trước đó
+            if (oldViewHolder != null) {
+                oldViewHolder.getButton().setImageResource(R.drawable.baseline_play_arrow);
+            }
+            holder.getButton().setImageResource(isPlaying ? R.drawable.baseline_pause : R.drawable.baseline_play_arrow);
+            oldViewHolder = holder;
+        }
+
+        playingPosition = currentPosition;
     }
 
 
