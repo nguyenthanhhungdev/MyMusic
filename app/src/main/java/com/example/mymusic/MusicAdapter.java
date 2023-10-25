@@ -24,6 +24,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private MyViewHolder oldViewHolder;
     private int playingPosition = -1;
+    private boolean isPlaying;
 
     public MusicAdapter(Context context, ArrayList<MusicFiles> musicFiles) {
         this.context = context;
@@ -101,7 +102,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         Uri uri = Uri.parse(musicFiles.get(currentPosition).getPath());
 
         // Kiểm tra xem có bài hát nào đang phát không
-        boolean isPlaying = mediaPlayer.isPlaying();
+        isPlaying = mediaPlayer.isPlaying();
 
         if (isPlaying) {
             // Nếu có bài hát đang phát
@@ -110,11 +111,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
                 mediaPlayer.stop();
                 mediaPlayer.release();
                 mediaPlayer = MediaPlayer.create(context, uri);
-                mediaPlayer.start();
+                playMusic(mediaPlayer);
             } else {
                 // Dừng bài hát hiện tại nếu đang phát
-                mediaPlayer.pause();
-                isPlaying = mediaPlayer.isPlaying();
+                pauseMusic(mediaPlayer);
             }
         } else {
             // Nếu không có bài hát nào đang phát
@@ -122,8 +122,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
                 // Nếu bài hát hiện tại khác với bài hát trước đó, tạo mới MediaPlayer
                 mediaPlayer = MediaPlayer.create(context, uri);
             }
-            mediaPlayer.start();
-            isPlaying = mediaPlayer.isPlaying();
+            playMusic(mediaPlayer);
         }
 
         // Lưu lại holder cũ
@@ -138,6 +137,16 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         holder.getButton().setImageResource(isPlaying ? R.drawable.baseline_pause : R.drawable.baseline_play_arrow);
 
         playingPosition = currentPosition;
+    }
+
+    private void pauseMusic(MediaPlayer mediaPlayer) {
+        mediaPlayer.pause();
+        isPlaying = mediaPlayer.isPlaying();
+    }
+
+    private void playMusic(MediaPlayer mediaPlayer) {
+        mediaPlayer.start();
+        isPlaying = mediaPlayer.isPlaying();
     }
 
 
