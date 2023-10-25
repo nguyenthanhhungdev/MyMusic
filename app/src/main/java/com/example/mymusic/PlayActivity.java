@@ -9,28 +9,25 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 
 public class PlayActivity extends AppCompatActivity {
 
     private ImageButton playButton, shuffleButton, previousButton, nextButton, repeatButton, backButton, menuButton;
     private TextView songNameTextView, artistTextView, durationPlayed, durationMax;
-    private ImageView imageView;
     private SeekBar seekBar;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     private int position = -1;
     //    private static ArrayList<MusicFiles> listSongs;
     private static Uri uri;
     public static MediaPlayer mediaPlayer;
-    private Thread playThread, pauseThread, prevThread, nextThread;
+    private Thread playThread, prevThread, nextThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +58,19 @@ public class PlayActivity extends AppCompatActivity {
 
             }
         });
+        capNhatUI();
+    }
+
+    /**
+     * runOnUiThread() là một phương thức trong các lớp Activity và View được sử dụng để đăng một tác vụ lên luồng chính.
+     * Luồng chính là luồng chịu trách nhiệm cập nhật giao diện người dùng.
+     *
+     * Nếu bạn gọi runOnUiThread() từ một luồng không phải giao diện người dùng,
+     * tác vụ sẽ được đăng lên luồng chính và sẽ được thực thi ngay khi luồng chính có sẵn.
+     * Điều này có nghĩa là bạn có thể chắc chắn rằng giao diện người dùng sẽ được cập nhật một cách an toàn và nhất quán.
+     * */
+
+    private void capNhatUI() {
         PlayActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -75,6 +85,7 @@ public class PlayActivity extends AppCompatActivity {
         });
 
     }
+
 
     /**
      * Khởi tạo các luồng trong onResume
@@ -91,9 +102,76 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void nextThreadBtn() {
+        nextThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                nextButton.setOnClickListener(e -> nextBtnClicked());
+            }
+        };
+        nextThread.start();
+    }
+
+    private void nextBtnClicked() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            position = ((position + 1) % musicFiles.size());
+            try {
+                checkPosition(position);
+            } catch (IndexOutOfBoundsException e) {
+                Toast.makeText(getApplicationContext(), "Đã hết danh sách bài hát", Toast.LENGTH_SHORT).show();
+            }
+            MusicFiles musicFile = musicFiles.get(position);
+            uri = Uri.parse(musicFile.getPath());
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+            metaData(uri);
+            songNameTextView.setText(musicFile.getTitle());
+            artistTextView.setText(musicFile.getArtist());
+            seekBar.setMax(mediaPlayer.getDuration() / 1000);
+            capNhatUI();
+            playButton.setImageResource(R.drawable.baseline_play_arrow);
+        }
     }
 
     private void prevThreadBtn() {
+        prevThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                previousButton.setOnClickListener(e -> prevButtonClick());
+            }
+        };
+        prevThread.start();
+    }
+
+    private void prevButtonClick() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            position = ((position - 1) % musicFiles.size());
+            try {
+                checkPosition(position);
+            } catch (IndexOutOfBoundsException e) {
+                Toast.makeText(getApplicationContext(), "Đã hết danh sách bài hát", Toast.LENGTH_SHORT).show();
+            }
+            MusicFiles musicFile = musicFiles.get(position);
+            uri = Uri.parse(musicFile.getPath());
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+            metaData(uri);
+            songNameTextView.setText(musicFile.getTitle());
+            artistTextView.setText(musicFile.getArtist());
+            seekBar.setMax(mediaPlayer.getDuration() / 1000);
+            capNhatUI();
+            playButton.setImageResource(R.drawable.baseline_play_arrow);
+            mediaPlayer.start();
+        }
+    }
+
+    private void checkPosition(int position) {
+        if (position < 0 || position > musicFiles.size()) {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     private void playThreadBtn() {
@@ -101,9 +179,7 @@ public class PlayActivity extends AppCompatActivity {
             @Override
             public void run() {
                 super.run();
-                playButton.setOnClickListener(e -> {
-                    playPauseBtnClicked();
-                });
+                playButton.setOnClickListener(e -> playPauseBtnClicked());
             }
         };
         playThread.start();
@@ -117,37 +193,17 @@ public class PlayActivity extends AppCompatActivity {
         if(mediaPlayer.isPlaying()) {
             playButton.setImageResource(R.drawable.baseline_play_arrow);
             mediaPlayer.pause();
-            seekBar.setMax(mediaPlayer.getDuration() / 1000);
-            PlayActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mediaPlayer != null) {
-                        int currentPosition = mediaPlayer.getCurrentPosition() / 1000;
-                        seekBar.setProgress(currentPosition);
-                    }
-                    handler.postDelayed(this, 1000);
-                }
-            });
         } else {
             playButton.setImageResource(R.drawable.baseline_pause);
             mediaPlayer.start();
-            seekBar.setMax(mediaPlayer.getDuration() / 1000);
-            PlayActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mediaPlayer != null) {
-                        int currentPosition = mediaPlayer.getCurrentPosition() / 1000;
-                        seekBar.setProgress(currentPosition);
-                    }
-                    handler.postDelayed(this, 1000);
-                }
-            });
         }
+        seekBar.setMax(mediaPlayer.getDuration() / 1000);
+        capNhatUI();
     }
 
     private String formattedTimer(int currentPosition) {
-        String totalOut = "";
-        String totalNew = "";
+        String totalOut;
+        String totalNew;
         String seconds = String.valueOf(currentPosition % 60);
         String minutes = String.valueOf(currentPosition / 60);
         totalOut = minutes + ":" + seconds;
@@ -168,12 +224,9 @@ public class PlayActivity extends AppCompatActivity {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
-            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-            mediaPlayer.start();
-        } else {
-            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-            mediaPlayer.start();
         }
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+        mediaPlayer.start();
         seekBar.setMax(mediaPlayer.getDuration() / 1000);
         metaData(uri);
     }
@@ -187,7 +240,7 @@ public class PlayActivity extends AppCompatActivity {
 
         songNameTextView = findViewById(R.id.songNameTextView);
         artistTextView = findViewById(R.id.artistTextView);
-        imageView = findViewById(R.id.imageView);
+        ImageView imageView = findViewById(R.id.imageView);
 
         backButton = findViewById(R.id.backButton);
         menuButton = findViewById(R.id.menuButton);
@@ -205,14 +258,4 @@ public class PlayActivity extends AppCompatActivity {
         durationMax.setText(formattedTimer(durationTotal));
     }
 
-    public void audioPlayer(String path) {
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(path);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Không thể phát âm thành", Toast.LENGTH_SHORT).show();
-        }
-    }
 }
