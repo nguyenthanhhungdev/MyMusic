@@ -23,8 +23,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private final ArrayList<MusicFiles> musicFiles;
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private MyViewHolder oldViewHolder;
-    private Thread playThread;
-    private Uri uri;
     private int playingPosition = -1;
 
     public MusicAdapter(Context context, ArrayList<MusicFiles> musicFiles) {
@@ -89,20 +87,18 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     }
 
     private void playThreadBtn(MyViewHolder holder, int position) {
-        playThread = new Thread() {
+        Thread playThread = new Thread() {
             @Override
             public void run() {
                 super.run();
-                holder.getButton().setOnClickListener(e -> {
-                    playPauseBtnClicked(holder, position);
-                });
+                holder.getButton().setOnClickListener(e -> playPauseBtnClicked(holder, position));
             }
         };
         playThread.start();
     }
 
     private void playPauseBtnClicked(MyViewHolder holder, int currentPosition) {
-        uri = Uri.parse(musicFiles.get(currentPosition).getPath());
+        Uri uri = Uri.parse(musicFiles.get(currentPosition).getPath());
 
         // Kiểm tra xem có bài hát nào đang phát không
         boolean isPlaying = mediaPlayer.isPlaying();
@@ -118,6 +114,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
             } else {
                 // Dừng bài hát hiện tại nếu đang phát
                 mediaPlayer.pause();
+                isPlaying = mediaPlayer.isPlaying();
             }
         } else {
             // Nếu không có bài hát nào đang phát
@@ -126,17 +123,19 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
                 mediaPlayer = MediaPlayer.create(context, uri);
             }
             mediaPlayer.start();
+            isPlaying = mediaPlayer.isPlaying();
         }
 
-        // Cập nhật giao diện
+        // Lưu lại holder cũ
         if (isPlaying || playingPosition != currentPosition) {
             // Nếu có bài hát đang phát hoặc bài hát hiện tại khác với bài hát trước đó
             if (oldViewHolder != null) {
                 oldViewHolder.getButton().setImageResource(R.drawable.baseline_play_arrow);
             }
-            holder.getButton().setImageResource(isPlaying ? R.drawable.baseline_pause : R.drawable.baseline_play_arrow);
             oldViewHolder = holder;
         }
+//        Cập nhật giao diện
+        holder.getButton().setImageResource(isPlaying ? R.drawable.baseline_pause : R.drawable.baseline_play_arrow);
 
         playingPosition = currentPosition;
     }
