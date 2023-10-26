@@ -104,7 +104,7 @@ public class PlayActivity extends AppCompatActivity {
 
 
     /**
-     * Khởi tạo các luồng trong onResume
+     * Khởi tạo các luồng trong onResume (khi người dùng có thể nhìn thấy giao diện)
      * Khi người dùng duyệt tới activity thì mới tạo ra các luồng
      * Dùng các luồng này để thuận tiện cho các tiến trình song song nhau với luồng giao diện chính
      * */
@@ -305,7 +305,6 @@ public class PlayActivity extends AppCompatActivity {
             });
         } else {
             Glide.with(this)
-                    .asBitmap()
                     .load(R.drawable.img)
                     .into(imageView);
         }
