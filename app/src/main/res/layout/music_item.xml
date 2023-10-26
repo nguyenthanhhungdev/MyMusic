@@ -71,7 +71,7 @@
         android:layout_height="60dp"
         android:layout_alignParentEnd="true"
         android:id="@+id/playButton"
-        android:background="#161E16"
+        android:background="@drawable/rounded_corner"
         android:src="@drawable/baseline_play_arrow"
         />
 </RelativeLayout>
