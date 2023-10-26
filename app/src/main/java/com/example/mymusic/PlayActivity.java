@@ -8,6 +8,7 @@ import androidx.palette.graphics.Palette;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -277,7 +278,28 @@ public class PlayActivity extends AppCompatActivity {
                         relativeLayout.setBackgroundResource(R.color.DenTrongSuot);
                         GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
                                 new int[]{swatch.getRgb(), 0x00000000});
-                        
+                        viewGradient.setBackground(gradientDrawable);
+                        GradientDrawable gradientDrawable1 = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                                new int[]{swatch.getRgb(), swatch.getRgb()});
+                        relativeLayout.setBackground(gradientDrawable1);
+
+                        songNameTextView.setTextColor(swatch.getTitleTextColor());
+                        artistTextView.setTextColor(swatch.getBodyTextColor());
+                    } else {
+                        ImageView viewGradient = findViewById(R.id.imageViewGradient);
+                        RelativeLayout relativeLayout = findViewById(R.id.playActivity);
+                        viewGradient.setBackgroundResource(R.drawable.gradient_bg);
+                        relativeLayout.setBackgroundResource(R.color.DenTrongSuot);
+                        GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                                new int[]{0xff00000, 0x0000000});
+                        viewGradient.setBackground(gradientDrawable);
+                        GradientDrawable gradientDrawable1 = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                                new int[]{0xff00000, 0xff00000});
+                        relativeLayout.setBackground(gradientDrawable1);
+
+                        songNameTextView.setTextColor(Color.WHITE);
+                        artistTextView.setTextColor(Color.DKGRAY);
+
                     }
                 }
             });
