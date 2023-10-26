@@ -2,18 +2,28 @@ package com.example.mymusic;
 
 import static com.example.mymusic.MainActivity.musicFiles;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.palette.graphics.Palette;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.GradientDrawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.google.android.material.color.utilities.CorePalette;
 
 
 public class PlayActivity extends AppCompatActivity {
@@ -27,7 +37,8 @@ public class PlayActivity extends AppCompatActivity {
     //    private static ArrayList<MusicFiles> listSongs;
     private static Uri uri;
     public static MediaPlayer mediaPlayer;
-    private Thread playThread, prevThread, nextThread;
+    private Thread nextPrevThread, playThread;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +90,10 @@ public class PlayActivity extends AppCompatActivity {
                     seekBar.setProgress(currentPosition);
                     durationPlayed.setText(formattedTimer(currentPosition));
                 }
+
+                if (String.valueOf(mediaPlayer.getDuration()/1000).equals(durationMax)) {
+                    playButton.setImageResource(R.drawable.baseline_play_arrow);
+                }
 //                Sau 1 khoảng thời gian thì gửi luồng này tới luồng giao diện
                 handler.postDelayed(this, 1000);
             }
@@ -97,26 +112,25 @@ public class PlayActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         playThreadBtn();
-        prevThreadBtn();
-        nextThreadBtn();
+        prevNextThreadBtn();
     }
 
-    private void nextThreadBtn() {
-        nextThread = new Thread() {
+    private void prevNextThreadBtn() {
+        nextPrevThread = new Thread() {
             @Override
             public void run() {
                 super.run();
                 nextButton.setOnClickListener(e -> nextBtnClicked());
+                previousButton.setOnClickListener(e -> prevButtonClick());
             }
         };
-        nextThread.start();
+        nextPrevThread.start();
     }
 
     private void nextBtnClicked() {
-        if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
-            position = ((position + 1) % musicFiles.size());
+            position = ((position + 1) % (musicFiles.size() + 1));
             try {
                 checkPosition(position);
             } catch (IndexOutOfBoundsException e) {
@@ -131,22 +145,9 @@ public class PlayActivity extends AppCompatActivity {
             seekBar.setMax(mediaPlayer.getDuration() / 1000);
             capNhatUI();
             playButton.setImageResource(R.drawable.baseline_play_arrow);
-        }
-    }
-
-    private void prevThreadBtn() {
-        prevThread = new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                previousButton.setOnClickListener(e -> prevButtonClick());
-            }
-        };
-        prevThread.start();
     }
 
     private void prevButtonClick() {
-        if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
             position = ((position - 1) % musicFiles.size());
@@ -154,6 +155,7 @@ public class PlayActivity extends AppCompatActivity {
                 checkPosition(position);
             } catch (IndexOutOfBoundsException e) {
                 Toast.makeText(getApplicationContext(), "Đã hết danh sách bài hát", Toast.LENGTH_SHORT).show();
+                return;
             }
             MusicFiles musicFile = musicFiles.get(position);
             uri = Uri.parse(musicFile.getPath());
@@ -165,12 +167,11 @@ public class PlayActivity extends AppCompatActivity {
             capNhatUI();
             playButton.setImageResource(R.drawable.baseline_play_arrow);
             mediaPlayer.start();
-        }
     }
 
     private void checkPosition(int position) {
         if (position < 0 || position > musicFiles.size()) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         }
     }
 
@@ -180,6 +181,7 @@ public class PlayActivity extends AppCompatActivity {
             public void run() {
                 super.run();
                 playButton.setOnClickListener(e -> playPauseBtnClicked());
+
             }
         };
         playThread.start();
@@ -240,7 +242,7 @@ public class PlayActivity extends AppCompatActivity {
 
         songNameTextView = findViewById(R.id.songNameTextView);
         artistTextView = findViewById(R.id.artistTextView);
-        ImageView imageView = findViewById(R.id.imageView);
+        imageView = findViewById(R.id.imageView);
 
         backButton = findViewById(R.id.backButton);
         menuButton = findViewById(R.id.menuButton);
@@ -256,6 +258,35 @@ public class PlayActivity extends AppCompatActivity {
         retriever.setDataSource(uri.toString());
         int durationTotal = Integer.parseInt(musicFiles.get(position).getDuration()) / 1000;
         durationMax.setText(formattedTimer(durationTotal));
+        byte[] art = retriever.getEmbeddedPicture();
+        Bitmap bitmap;
+        if (art != null) {
+            Glide.with(this)
+                    .asBitmap()
+                    .load(art)
+                    .into(imageView);
+            bitmap = BitmapFactory.decodeByteArray(art, 0, art.length);
+            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(@Nullable Palette palette) {
+                    Palette.Swatch swatch = palette.getDominantSwatch();
+                    if (swatch != null) {
+                        ImageView viewGradient = findViewById(R.id.imageViewGradient);
+                        RelativeLayout relativeLayout = findViewById(R.id.playActivity);
+                        viewGradient.setBackgroundResource(R.drawable.gradient_bg);
+                        relativeLayout.setBackgroundResource(R.color.DenTrongSuot);
+                        GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                                new int[]{swatch.getRgb(), 0x00000000});
+                        
+                    }
+                }
+            });
+        } else {
+            Glide.with(this)
+                    .asBitmap()
+                    .load(R.drawable.img)
+                    .into(imageView);
+        }
     }
 
 }
