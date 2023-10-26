@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="#161E16"
     android:id="@+id/playActivity"
     android:orientation="vertical"
     tools:context=".PlayActivity">
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:id="@+id/topLayout"
-        android:background="@color/material_dynamic_tertiary10"
+        android:background="#161E16"
         android:layout_alignParentTop="true">
 
         <ImageButton
@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_alignParentBottom="true"
-            android:src="@drawable/gradient_bg"
+            android:src="@drawable/gradient_xam"
             />
     </RelativeLayout>
 
