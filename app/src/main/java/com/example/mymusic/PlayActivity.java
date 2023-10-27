@@ -44,6 +44,7 @@ public class PlayActivity extends AppCompatActivity {
     public static MediaPlayer mediaPlayer;
     private Thread nextPrevThread, playThread;
     private ImageView imageView;
+    private int durationTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,10 @@ public class PlayActivity extends AppCompatActivity {
 
             }
         });
+
+        backButton.setOnClickListener(e ->{
+            onBackPressed();
+        });
         capNhatUI();
     }
 
@@ -95,10 +100,14 @@ public class PlayActivity extends AppCompatActivity {
                     int currentPosition = mediaPlayer.getCurrentPosition() / 1000;
                     seekBar.setProgress(currentPosition);
                     durationPlayed.setText(formattedTimer(currentPosition));
-                }
-
-                if (String.valueOf(mediaPlayer.getDuration() / 1000).equals(durationMax)) {
-                    playButton.setImageResource(R.drawable.baseline_play_arrow);
+                    if (currentPosition == durationTotal) {
+                        nextBtnClicked();
+                        if (!repeatBoolean && (position + 1) == musicFiles.size()) {
+                             nextBtnClicked();
+                             mediaPlayer.stop();
+                             playButton.setImageResource(R.drawable.baseline_play_arrow);
+                        }
+                    }
                 }
 //                Sau 1 khoảng thời gian thì gửi luồng này tới luồng giao diện
                 handler.postDelayed(this, 1000);
@@ -212,7 +221,7 @@ public class PlayActivity extends AppCompatActivity {
     private void prev() {
         mediaPlayer.stop();
         mediaPlayer.release();
-        position = ((position - 1) % musicFiles.size());
+        position = (position - 1) < 0 ? (musicFiles.size() - 1): (position - 1);
         try {
             checkPosition(position);
         } catch (IndexOutOfBoundsException e) {
@@ -317,7 +326,7 @@ public class PlayActivity extends AppCompatActivity {
     private void metaData(Uri uri) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(uri.toString());
-        int durationTotal = Integer.parseInt(musicFiles.get(position).getDuration()) / 1000;
+        durationTotal = Integer.parseInt(musicFiles.get(position).getDuration()) / 1000;
         durationMax.setText(formattedTimer(durationTotal));
         byte[] art = retriever.getEmbeddedPicture();
         Bitmap bitmap;
