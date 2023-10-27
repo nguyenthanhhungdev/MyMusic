@@ -88,14 +88,14 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     }
 
     private void playThreadBtn(MyViewHolder holder, int position) {
-        Thread playThread = new Thread() {
+        ThreadPlay.playThread = new Thread() {
             @Override
             public void run() {
                 super.run();
                 holder.getButton().setOnClickListener(e -> playPauseBtnClicked(holder, position));
             }
         };
-        playThread.start();
+        ThreadPlay.playThread.start();
     }
 
     private void playPauseBtnClicked(MyViewHolder holder, int currentPosition) {

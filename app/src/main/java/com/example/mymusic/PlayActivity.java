@@ -42,7 +42,7 @@ public class PlayActivity extends AppCompatActivity {
     //    private static ArrayList<MusicFiles> listSongs;
     private static Uri uri;
     public static MediaPlayer mediaPlayer;
-    private Thread nextPrevThread, playThread;
+//    private Thread nextPrevThread, playThread;
     private ImageView imageView;
     private int durationTotal;
 
@@ -150,7 +150,7 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void prevNextThreadBtn() {
-        nextPrevThread = new Thread() {
+        ThreadPlay.nextPrevThread = new Thread() {
             @Override
             public void run() {
                 super.run();
@@ -158,7 +158,7 @@ public class PlayActivity extends AppCompatActivity {
                 previousButton.setOnClickListener(e -> prevButtonClick());
             }
         };
-        nextPrevThread.start();
+        ThreadPlay.nextPrevThread.start();
     }
 
     private void nextBtnClicked() {
@@ -245,7 +245,7 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void playThreadBtn() {
-        playThread = new Thread() {
+        ThreadPlay.playThread = new Thread() {
             @Override
             public void run() {
                 super.run();
@@ -253,7 +253,7 @@ public class PlayActivity extends AppCompatActivity {
 
             }
         };
-        playThread.start();
+        ThreadPlay.playThread.start();
     }
 
     /**
