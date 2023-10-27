@@ -1,6 +1,8 @@
 package com.example.mymusic;
 
 import static com.example.mymusic.MainActivity.musicFiles;
+import static com.example.mymusic.MainActivity.repeatBoolean;
+import static com.example.mymusic.MainActivity.shuffleBoolean;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.color.utilities.CorePalette;
+
+import java.util.Random;
 
 
 public class PlayActivity extends AppCompatActivity {
@@ -52,6 +56,7 @@ public class PlayActivity extends AppCompatActivity {
         songNameTextView.setText(musicFiles.get(position).getTitle());
         artistTextView.setText(musicFiles.get(position).getArtist());
 
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -76,11 +81,11 @@ public class PlayActivity extends AppCompatActivity {
     /**
      * runOnUiThread() là một phương thức trong các lớp Activity và View được sử dụng để đăng một tác vụ lên luồng chính.
      * Luồng chính là luồng chịu trách nhiệm cập nhật giao diện người dùng.
-     *
+     * <p>
      * Nếu bạn gọi runOnUiThread() từ một luồng không phải giao diện người dùng,
      * tác vụ sẽ được đăng lên luồng chính và sẽ được thực thi ngay khi luồng chính có sẵn.
      * Điều này có nghĩa là bạn có thể chắc chắn rằng giao diện người dùng sẽ được cập nhật một cách an toàn và nhất quán.
-     * */
+     */
 
     private void capNhatUI() {
         PlayActivity.this.runOnUiThread(new Runnable() {
@@ -92,7 +97,7 @@ public class PlayActivity extends AppCompatActivity {
                     durationPlayed.setText(formattedTimer(currentPosition));
                 }
 
-                if (String.valueOf(mediaPlayer.getDuration()/1000).equals(durationMax)) {
+                if (String.valueOf(mediaPlayer.getDuration() / 1000).equals(durationMax)) {
                     playButton.setImageResource(R.drawable.baseline_play_arrow);
                 }
 //                Sau 1 khoảng thời gian thì gửi luồng này tới luồng giao diện
@@ -100,6 +105,25 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
 
+        shuffleButton.setOnClickListener(e -> {
+            if (shuffleBoolean) {
+                shuffleBoolean = false;
+                shuffleButton.setImageResource(R.drawable.baseline_shuffle_off);
+            } else {
+                shuffleBoolean = true;
+                shuffleButton.setImageResource(R.drawable.baseline_shuffle_on_24);
+            }
+        });
+
+        repeatButton.setOnClickListener(e -> {
+            if (repeatBoolean) {
+                repeatBoolean = false;
+                repeatButton.setImageResource(R.drawable.baseline_repeat_off);
+            } else {
+                repeatBoolean = true;
+                repeatButton.setImageResource(R.drawable.baseline_repeat_on);
+            }
+        });
     }
 
 
@@ -107,7 +131,7 @@ public class PlayActivity extends AppCompatActivity {
      * Khởi tạo các luồng trong onResume (khi người dùng có thể nhìn thấy giao diện)
      * Khi người dùng duyệt tới activity thì mới tạo ra các luồng
      * Dùng các luồng này để thuận tiện cho các tiến trình song song nhau với luồng giao diện chính
-     * */
+     */
 
     @Override
     protected void onResume() {
@@ -129,45 +153,80 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void nextBtnClicked() {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            position = ((position + 1) % (musicFiles.size() + 1));
-            try {
-                checkPosition(position);
-            } catch (IndexOutOfBoundsException e) {
-                Toast.makeText(getApplicationContext(), "Đã hết danh sách bài hát", Toast.LENGTH_SHORT).show();
-            }
-            MusicFiles musicFile = musicFiles.get(position);
-            uri = Uri.parse(musicFile.getPath());
-            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-            metaData(uri);
-            songNameTextView.setText(musicFile.getTitle());
-            artistTextView.setText(musicFile.getArtist());
-            seekBar.setMax(mediaPlayer.getDuration() / 1000);
-            capNhatUI();
+        if (mediaPlayer.isPlaying()) {
+            next();
+            playButton.setImageResource(R.drawable.baseline_pause);
+            mediaPlayer.start();
+        } else {
+            next();
             playButton.setImageResource(R.drawable.baseline_play_arrow);
+        }
+    }
+
+    private void next() {
+        mediaPlayer.stop();
+        mediaPlayer.release();
+
+        if (shuffleBoolean && !repeatBoolean) {
+            position = getRandom(musicFiles.size() - 1);
+        } else if (!shuffleBoolean && !repeatBoolean) {
+            position = ((position + 1) % musicFiles.size());
+        }
+        try {
+            checkPosition(position);
+        } catch (IndexOutOfBoundsException e) {
+            Toast.makeText(getApplicationContext(), "Đã hết danh sách bài hát", Toast.LENGTH_SHORT).show();
+        }
+
+        MusicFiles musicFile = musicFiles.get(position);
+        uri = Uri.parse(musicFile.getPath());
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+        metaData(uri);
+        songNameTextView.setText(musicFile.getTitle());
+        artistTextView.setText(musicFile.getArtist());
+        seekBar.setMax(mediaPlayer.getDuration() / 1000);
+        capNhatUI();
+    }
+
+    private int getRandom(int i) {
+        // Tạo một đối tượng Random
+        Random random = new Random();
+
+        // Sử dụng nextInt để tạo số ngẫu nhiên từ 0 đến i (bao gồm cả 0 và i)
+        int randomNumber = random.nextInt(i + 1);
+
+        return randomNumber;
     }
 
     private void prevButtonClick() {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            position = ((position - 1) % musicFiles.size());
-            try {
-                checkPosition(position);
-            } catch (IndexOutOfBoundsException e) {
-                Toast.makeText(getApplicationContext(), "Đã hết danh sách bài hát", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            MusicFiles musicFile = musicFiles.get(position);
-            uri = Uri.parse(musicFile.getPath());
-            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-            metaData(uri);
-            songNameTextView.setText(musicFile.getTitle());
-            artistTextView.setText(musicFile.getArtist());
-            seekBar.setMax(mediaPlayer.getDuration() / 1000);
-            capNhatUI();
-            playButton.setImageResource(R.drawable.baseline_play_arrow);
+        if (mediaPlayer.isPlaying()) {
+            prev();
+            playButton.setImageResource(R.drawable.baseline_pause);
             mediaPlayer.start();
+        } else {
+            prev();
+            playButton.setImageResource(R.drawable.baseline_play_arrow);
+        }
+    }
+
+    private void prev() {
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        position = ((position - 1) % musicFiles.size());
+        try {
+            checkPosition(position);
+        } catch (IndexOutOfBoundsException e) {
+            Toast.makeText(getApplicationContext(), "Đã hết danh sách bài hát", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        MusicFiles musicFile = musicFiles.get(position);
+        uri = Uri.parse(musicFile.getPath());
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+        metaData(uri);
+        songNameTextView.setText(musicFile.getTitle());
+        artistTextView.setText(musicFile.getArtist());
+        seekBar.setMax(mediaPlayer.getDuration() / 1000);
+        capNhatUI();
     }
 
     private void checkPosition(int position) {
@@ -188,12 +247,13 @@ public class PlayActivity extends AppCompatActivity {
         playThread.start();
     }
 
-  /**  Đang play khi gọi tới activity_play,giao diện đang ở nút pause
-        khi người dùng nhấn vào nút pause thì sẽ chuyển sang nút play và dừng lại
-        sau đó tùy chỉnh lại thanh seekbar
-   */
+    /**
+     * Đang play khi gọi tới activity_play,giao diện đang ở nút pause
+     * khi người dùng nhấn vào nút pause thì sẽ chuyển sang nút play và dừng lại
+     * sau đó tùy chỉnh lại thanh seekbar
+     */
     private void playPauseBtnClicked() {
-        if(mediaPlayer.isPlaying()) {
+        if (mediaPlayer.isPlaying()) {
             playButton.setImageResource(R.drawable.baseline_play_arrow);
             mediaPlayer.pause();
         } else {

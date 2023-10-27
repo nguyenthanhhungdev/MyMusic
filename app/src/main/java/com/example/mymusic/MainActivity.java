@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     static ArrayList<MusicFiles> musicFiles;
-
+    static boolean shuffleBoolean = false, repeatBoolean = false;
     private static final int REQUESTCODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
