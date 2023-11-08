@@ -1,6 +1,5 @@
 package com.example.mymusic;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
@@ -21,10 +20,11 @@ import java.util.ArrayList;
 public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private final Context context; // biến để truy cập tới các dữ liệu của giao diện gọi tới
     private final ArrayList<MusicFiles> musicFiles;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private static MediaPlayer mediaPlayer = new MediaPlayer();
     private MyViewHolder oldViewHolder;
     private int playingPosition = -1;
     private boolean isPlaying;
+    private Uri uri;
 
     public MusicAdapter(Context context, ArrayList<MusicFiles> musicFiles) {
         this.context = context;
@@ -82,6 +82,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         holder.itemView.setOnClickListener(e -> {
             Intent intent = new Intent(context, PlayActivity.class);
             intent.putExtra("position", position);
+            intent.putExtra("playing_position", playingPosition);
+            mediaPlayer.pause();
             context.startActivity(intent);
         });
 
@@ -99,7 +101,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     }
 
     private void playPauseBtnClicked(MyViewHolder holder, int currentPosition) {
-        Uri uri = Uri.parse(musicFiles.get(currentPosition).getPath());
+        uri = Uri.parse(musicFiles.get(currentPosition).getPath());
 
         // Kiểm tra xem có bài hát nào đang phát không
         isPlaying = mediaPlayer.isPlaying();
@@ -192,4 +194,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         return finalTimerString;
     }
 
+    public static MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    public static void setMediaPlayer(MediaPlayer mediaPlayer) {
+        MusicAdapter.mediaPlayer = mediaPlayer;
+    }
 }

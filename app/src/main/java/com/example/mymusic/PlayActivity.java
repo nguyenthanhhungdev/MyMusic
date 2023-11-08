@@ -3,6 +3,8 @@ package com.example.mymusic;
 import static com.example.mymusic.MainActivity.musicFiles;
 import static com.example.mymusic.MainActivity.repeatBoolean;
 import static com.example.mymusic.MainActivity.shuffleBoolean;
+import static com.example.mymusic.MusicAdapter.getMediaPlayer;
+import static com.example.mymusic.MusicAdapter.setMediaPlayer;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,11 +42,11 @@ public class PlayActivity extends AppCompatActivity {
 
     private int position = -1;
     //    private static ArrayList<MusicFiles> listSongs;
-    private static Uri uri;
-    public static MediaPlayer mediaPlayer;
-//    private Thread nextPrevThread, playThread;
+    private Uri uri;
+    //    private Thread nextPrevThread, playThread;
     private ImageView imageView;
     private int durationTotal;
+    private static int oldPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +63,8 @@ public class PlayActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (mediaPlayer != null && fromUser) {
-                    mediaPlayer.seekTo(progress * 1000);
+                if (getMediaPlayer() != null && fromUser) {
+                    getMediaPlayer().seekTo(progress * 1000);
                 }
             }
 
@@ -77,7 +79,7 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
 
-        backButton.setOnClickListener(e ->{
+        backButton.setOnClickListener(e -> {
             onBackPressed();
         });
         capNhatUI();
@@ -96,16 +98,16 @@ public class PlayActivity extends AppCompatActivity {
         PlayActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (mediaPlayer != null) {
-                    int currentPosition = mediaPlayer.getCurrentPosition() / 1000;
+                if (getMediaPlayer() != null) {
+                    int currentPosition = getMediaPlayer().getCurrentPosition() / 1000;
                     seekBar.setProgress(currentPosition);
                     durationPlayed.setText(formattedTimer(currentPosition));
                     if (currentPosition == durationTotal) {
                         nextBtnClicked();
                         if (!repeatBoolean && (position + 1) == musicFiles.size()) {
-                             nextBtnClicked();
-                             mediaPlayer.stop();
-                             playButton.setImageResource(R.drawable.baseline_play_arrow);
+                            nextBtnClicked();
+                            getMediaPlayer().stop();
+                            playButton.setImageResource(R.drawable.baseline_play_arrow);
                         }
                     }
                 }
@@ -150,22 +152,24 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void prevNextThreadBtn() {
-        ThreadPlay.nextPrevThread = new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                nextButton.setOnClickListener(e -> nextBtnClicked());
-                previousButton.setOnClickListener(e -> prevButtonClick());
-            }
-        };
-        ThreadPlay.nextPrevThread.start();
+        if (ThreadPlay.nextPrevThread == null) {
+            ThreadPlay.nextPrevThread = new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    nextButton.setOnClickListener(e -> nextBtnClicked());
+                    previousButton.setOnClickListener(e -> prevButtonClick());
+                }
+            };
+            ThreadPlay.nextPrevThread.start();
+        }
     }
 
     private void nextBtnClicked() {
-        if (mediaPlayer.isPlaying()) {
+        if (getMediaPlayer().isPlaying()) {
             next();
             playButton.setImageResource(R.drawable.baseline_pause);
-            mediaPlayer.start();
+            getMediaPlayer().start();
         } else {
             next();
             playButton.setImageResource(R.drawable.baseline_play_arrow);
@@ -173,8 +177,8 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void next() {
-        mediaPlayer.stop();
-        mediaPlayer.release();
+        getMediaPlayer().stop();
+        getMediaPlayer().release();
 
         if (shuffleBoolean && !repeatBoolean) {
             position = getRandom(musicFiles.size() - 1);
@@ -189,11 +193,11 @@ public class PlayActivity extends AppCompatActivity {
 
         MusicFiles musicFile = musicFiles.get(position);
         uri = Uri.parse(musicFile.getPath());
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+        setMediaPlayer(MediaPlayer.create(getApplicationContext(), uri));
         metaData(uri);
         songNameTextView.setText(musicFile.getTitle());
         artistTextView.setText(musicFile.getArtist());
-        seekBar.setMax(mediaPlayer.getDuration() / 1000);
+        seekBar.setMax(getMediaPlayer().getDuration() / 1000);
         capNhatUI();
     }
 
@@ -208,10 +212,10 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void prevButtonClick() {
-        if (mediaPlayer.isPlaying()) {
+        if (getMediaPlayer().isPlaying()) {
             prev();
             playButton.setImageResource(R.drawable.baseline_pause);
-            mediaPlayer.start();
+            getMediaPlayer().start();
         } else {
             prev();
             playButton.setImageResource(R.drawable.baseline_play_arrow);
@@ -219,9 +223,9 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void prev() {
-        mediaPlayer.stop();
-        mediaPlayer.release();
-        position = (position - 1) < 0 ? (musicFiles.size() - 1): (position - 1);
+        getMediaPlayer().stop();
+        getMediaPlayer().release();
+        position = (position - 1) < 0 ? (musicFiles.size() - 1) : (position - 1);
         try {
             checkPosition(position);
         } catch (IndexOutOfBoundsException e) {
@@ -230,11 +234,11 @@ public class PlayActivity extends AppCompatActivity {
         }
         MusicFiles musicFile = musicFiles.get(position);
         uri = Uri.parse(musicFile.getPath());
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+        setMediaPlayer(MediaPlayer.create(getApplicationContext(), uri));
         metaData(uri);
         songNameTextView.setText(musicFile.getTitle());
         artistTextView.setText(musicFile.getArtist());
-        seekBar.setMax(mediaPlayer.getDuration() / 1000);
+        seekBar.setMax(getMediaPlayer().getDuration() / 1000);
         capNhatUI();
     }
 
@@ -245,15 +249,17 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void playThreadBtn() {
-        ThreadPlay.playThread = new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                playButton.setOnClickListener(e -> playPauseBtnClicked());
+        if (ThreadPlay.playThread == null) {
+            ThreadPlay.playThread = new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    playButton.setOnClickListener(e -> playPauseBtnClicked());
 
-            }
-        };
-        ThreadPlay.playThread.start();
+                }
+            };
+            ThreadPlay.playThread.start();
+        }
     }
 
     /**
@@ -262,14 +268,14 @@ public class PlayActivity extends AppCompatActivity {
      * sau đó tùy chỉnh lại thanh seekbar
      */
     private void playPauseBtnClicked() {
-        if (mediaPlayer.isPlaying()) {
+        if (getMediaPlayer().isPlaying()) {
             playButton.setImageResource(R.drawable.baseline_play_arrow);
-            mediaPlayer.pause();
+            getMediaPlayer().pause();
         } else {
             playButton.setImageResource(R.drawable.baseline_pause);
-            mediaPlayer.start();
+            getMediaPlayer().start();
         }
-        seekBar.setMax(mediaPlayer.getDuration() / 1000);
+        seekBar.setMax(getMediaPlayer().getDuration() / 1000);
         capNhatUI();
     }
 
@@ -289,18 +295,21 @@ public class PlayActivity extends AppCompatActivity {
 
     private void getIntentMethod() {
         position = getIntent().getIntExtra("position", -1);
+        int currentPosition = getIntent().getIntExtra("playing_position", -1);
         if (musicFiles != null) {
             playButton.setImageResource(R.drawable.baseline_pause);
             uri = Uri.parse(musicFiles.get(position).getPath());
         }
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
+        if ((getMediaPlayer() != null && currentPosition != position)/* || currentPosition != oldPosition*/) {
+            getMediaPlayer().stop();
+            getMediaPlayer().release();
+        } else if (getMediaPlayer() == null) {
+            setMediaPlayer(MediaPlayer.create(getApplicationContext(), uri));
         }
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-        mediaPlayer.start();
-        seekBar.setMax(mediaPlayer.getDuration() / 1000);
+        getMediaPlayer().start();
+        seekBar.setMax(getMediaPlayer().getDuration() / 1000);
         metaData(uri);
+        oldPosition = currentPosition;
     }
 
     public void initComponent() {

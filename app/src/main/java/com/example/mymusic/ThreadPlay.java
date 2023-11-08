@@ -5,6 +5,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 public class ThreadPlay extends Thread{
-    static Thread nextPrevThread;
-    static Thread playThread;
+    public static Thread nextPrevThread = null;
+    public static Thread playThread = null;
 }
