@@ -20,9 +20,9 @@ import java.util.ArrayList;
 public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private final Context context; // biến để truy cập tới các dữ liệu của giao diện gọi tới
     private final ArrayList<MusicFiles> musicFiles;
-    private static MediaPlayer mediaPlayer = new MediaPlayer();
+    private static MediaPlayer mediaPlayer = null;
     private MyViewHolder oldViewHolder;
-    private int playingPosition = -1;
+    private int playingPosition = -1; // position của bài hát đang phát
     private boolean isPlaying;
     private Uri uri;
 
@@ -83,7 +83,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
             Intent intent = new Intent(context, PlayActivity.class);
             intent.putExtra("position", position);
             intent.putExtra("playing_position", playingPosition);
-            mediaPlayer.pause();
+//            mediaPlayer.pause();
             context.startActivity(intent);
         });
 
@@ -112,6 +112,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
                 // Dừng bài hát hiện tại
                 mediaPlayer.stop();
                 mediaPlayer.release();
+//                Chơi bài hat mới
                 mediaPlayer = MediaPlayer.create(context, uri);
                 playMusic(mediaPlayer);
             } else {

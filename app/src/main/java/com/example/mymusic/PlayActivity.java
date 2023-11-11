@@ -46,7 +46,6 @@ public class PlayActivity extends AppCompatActivity {
     //    private Thread nextPrevThread, playThread;
     private ImageView imageView;
     private int durationTotal;
-    private static int oldPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +82,27 @@ public class PlayActivity extends AppCompatActivity {
             onBackPressed();
         });
         capNhatUI();
+    }
+
+    private void getIntentMethod() {
+        position = getIntent().getIntExtra("position", -1);
+        int playingPosition = getIntent().getIntExtra("playing_position", -1);
+        if (musicFiles != null) {
+            playButton.setImageResource(R.drawable.baseline_pause);
+            uri = Uri.parse(musicFiles.get(position).getPath());
+        }
+        MediaPlayer mediaPlayer = getMediaPlayer();
+        if (mediaPlayer.isPlaying() && playingPosition != position) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+        if (mediaPlayer == null){
+            setMediaPlayer(MediaPlayer.create(getApplicationContext(), uri));
+        }
+        mediaPlayer.start();
+        seekBar.setMax(getMediaPlayer().getDuration() / 1000);
+        metaData(uri);
     }
 
     /**
@@ -254,8 +274,13 @@ public class PlayActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     super.run();
-                    playButton.setOnClickListener(e -> playPauseBtnClicked());
-
+//                    playButton.setOnClickListener(e -> playPauseBtnClicked());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            playButton.setOnClickListener(e -> playPauseBtnClicked());
+                        }
+                    });
                 }
             };
             ThreadPlay.playThread.start();
@@ -293,24 +318,6 @@ public class PlayActivity extends AppCompatActivity {
         return totalOut;
     }
 
-    private void getIntentMethod() {
-        position = getIntent().getIntExtra("position", -1);
-        int currentPosition = getIntent().getIntExtra("playing_position", -1);
-        if (musicFiles != null) {
-            playButton.setImageResource(R.drawable.baseline_pause);
-            uri = Uri.parse(musicFiles.get(position).getPath());
-        }
-        if ((getMediaPlayer() != null && currentPosition != position)/* || currentPosition != oldPosition*/) {
-            getMediaPlayer().stop();
-            getMediaPlayer().release();
-        } else if (getMediaPlayer() == null) {
-            setMediaPlayer(MediaPlayer.create(getApplicationContext(), uri));
-        }
-        getMediaPlayer().start();
-        seekBar.setMax(getMediaPlayer().getDuration() / 1000);
-        metaData(uri);
-        oldPosition = currentPosition;
-    }
 
     public void initComponent() {
         playButton = findViewById(R.id.playButton);
