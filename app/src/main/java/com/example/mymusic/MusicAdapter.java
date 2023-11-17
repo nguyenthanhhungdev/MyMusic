@@ -22,7 +22,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private final ArrayList<MusicFiles> musicFiles;
     private static MediaPlayer mediaPlayer = new MediaPlayer();
     private MyViewHolder oldViewHolder;
-    private int playingPosition = -1; // position của bài hát đang phát
+    private static int playingPosition = -1; // position của bài hát đang phát
     private boolean isPlaying;
     private Uri uri;
 
@@ -208,5 +208,13 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     public static void setMediaPlayer(MediaPlayer mediaPlayer) {
         MusicAdapter.mediaPlayer = mediaPlayer;
+    }
+
+    public static int getPlayingPosition() {
+        return playingPosition;
+    }
+
+    public static void setPlayingPosition(int playingPosition) {
+        MusicAdapter.playingPosition = playingPosition;
     }
 }

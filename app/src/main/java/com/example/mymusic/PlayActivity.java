@@ -40,7 +40,7 @@ public class PlayActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private final Handler handler = new Handler();
 
-    private int position = -1;
+    private int position = -1; /**Position được truyền từ MainActivity*/
     //    private static ArrayList<MusicFiles> listSongs;
     private Uri uri;
     //    private Thread nextPrevThread, playThread;
@@ -218,6 +218,7 @@ public class PlayActivity extends AppCompatActivity {
         artistTextView.setText(musicFile.getArtist());
         seekBar.setMax(getMediaPlayer().getDuration() / 1000);
         capNhatUI();
+        MusicAdapter.setPlayingPosition(position);
     }
 
     private int getRandom(int i) {
