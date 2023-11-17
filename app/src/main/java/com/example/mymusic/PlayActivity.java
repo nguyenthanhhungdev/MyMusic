@@ -92,13 +92,14 @@ public class PlayActivity extends AppCompatActivity {
             uri = Uri.parse(musicFiles.get(position).getPath());
         }
         MediaPlayer mediaPlayer = getMediaPlayer();
-        if (mediaPlayer.isPlaying() && playingPosition != position) {
+        if (mediaPlayer != null && playingPosition != position) {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        if (mediaPlayer == null){
-            setMediaPlayer(MediaPlayer.create(getApplicationContext(), uri));
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+            setMediaPlayer(mediaPlayer);
         }
         mediaPlayer.start();
         seekBar.setMax(getMediaPlayer().getDuration() / 1000);
@@ -172,17 +173,15 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void prevNextThreadBtn() {
-        if (ThreadPlay.nextPrevThread == null) {
-            ThreadPlay.nextPrevThread = new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    nextButton.setOnClickListener(e -> nextBtnClicked());
-                    previousButton.setOnClickListener(e -> prevButtonClick());
-                }
-            };
-            ThreadPlay.nextPrevThread.start();
-        }
+        Thread nextPrevThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                nextButton.setOnClickListener(e -> nextBtnClicked());
+                previousButton.setOnClickListener(e -> prevButtonClick());
+            }
+        };
+        nextPrevThread.start();
     }
 
     private void nextBtnClicked() {
@@ -269,22 +268,20 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void playThreadBtn() {
-        if (ThreadPlay.playThread == null) {
-            ThreadPlay.playThread = new Thread() {
-                @Override
-                public void run() {
-                    super.run();
+        Thread playThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
 //                    playButton.setOnClickListener(e -> playPauseBtnClicked());
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            playButton.setOnClickListener(e -> playPauseBtnClicked());
-                        }
-                    });
-                }
-            };
-            ThreadPlay.playThread.start();
-        }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        playButton.setOnClickListener(e -> playPauseBtnClicked());
+                    }
+                });
+            }
+        };
+        playThread.start();
     }
 
     /**

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private final Context context; // biến để truy cập tới các dữ liệu của giao diện gọi tới
     private final ArrayList<MusicFiles> musicFiles;
-    private static MediaPlayer mediaPlayer = null;
+    private static MediaPlayer mediaPlayer = new MediaPlayer();
     private MyViewHolder oldViewHolder;
     private int playingPosition = -1; // position của bài hát đang phát
     private boolean isPlaying;
@@ -42,6 +42,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     //    Gán dữ liệu từ thành phần giao diện vào ViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        int currentPosition = position;
 
         String title = musicFiles.get(position).getTitle();
         holder.getNameTextView().setText(title);
@@ -83,21 +84,27 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
             Intent intent = new Intent(context, PlayActivity.class);
             intent.putExtra("position", position);
             intent.putExtra("playing_position", playingPosition);
-//            mediaPlayer.pause();
             context.startActivity(intent);
+            /**
+             * Sau khi truyền playingPosition vào trong intent thì ta mới cập nhật lại playingPosition
+             * Vì khi cập nhật trước khi truyền sẽ gây hệ thống hiểu lầm là đang chơi 1 bài vì playingPosition = currentPosition nên không khởi tạo mediaPlayer cho bài mới
+             * Truyền sau giúp ta xác định lại bài hát khi chơi ở ngoài màn hình chính
+             * */
+            playingPosition = currentPosition;
+            holder.getButton().setImageResource(R.drawable.baseline_pause);
         });
 
     }
 
     private void playThreadBtn(MyViewHolder holder, int position) {
-        ThreadPlay.playThread = new Thread() {
+        Thread playThread = new Thread() {
             @Override
             public void run() {
                 super.run();
                 holder.getButton().setOnClickListener(e -> playPauseBtnClicked(holder, position));
             }
         };
-        ThreadPlay.playThread.start();
+        playThread.start();
     }
 
     private void playPauseBtnClicked(MyViewHolder holder, int currentPosition) {
