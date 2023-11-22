@@ -44,7 +44,7 @@ public class PlayActivity extends AppCompatActivity {
     //    private static ArrayList<MusicFiles> listSongs;
     private Uri uri;
     //    private Thread nextPrevThread, playThread;
-    private ImageView imageView;
+    private ImageView imageView, imageView2;
     private int durationTotal;
 
     @Override
@@ -327,6 +327,8 @@ public class PlayActivity extends AppCompatActivity {
         songNameTextView = findViewById(R.id.songNameTextView);
         artistTextView = findViewById(R.id.artistTextView);
         imageView = findViewById(R.id.imageView);
+        imageView2 = findViewById(R.id.imageView2);
+
 
         backButton = findViewById(R.id.backButton);
         menuButton = findViewById(R.id.menuButton);
@@ -345,10 +347,8 @@ public class PlayActivity extends AppCompatActivity {
         byte[] art = retriever.getEmbeddedPicture();
         Bitmap bitmap;
         if (art != null) {
-            Glide.with(this)
-                    .asBitmap()
-                    .load(art)
-                    .into(imageView);
+            loadImage(imageView, art);
+            loadImage(imageView2, art);
             bitmap = BitmapFactory.decodeByteArray(art, 0, art.length);
             Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                 @Override
@@ -387,10 +387,22 @@ public class PlayActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Glide.with(this)
-                    .load(R.drawable.img)
-                    .into(imageView);
+            loadImage(imageView, R.drawable.img);
+            loadImage(imageView2, R.drawable.img);
         }
+    }
+
+    private void loadImage(ImageView imageView2, int img) {
+        Glide.with(this)
+                .load(img)
+                .into(imageView2);
+    }
+
+    private void loadImage(ImageView imageView2, byte[] art) {
+        Glide.with(this)
+                .asBitmap()
+                .load(art)
+                .into(imageView2);
     }
 
 }

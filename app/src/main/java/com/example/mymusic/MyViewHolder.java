@@ -1,5 +1,6 @@
 package com.example.mymusic;
 
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -19,7 +20,11 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
         imageView = itemView.findViewById(R.id.imageView);
         numTextView = itemView.findViewById(R.id.numberText);
         nameTextView = itemView.findViewById(R.id.nameSongTextView);
+        nameTextView.setMovementMethod(new ScrollingMovementMethod());
+        nameTextView.setSelected(true);
         otherTextView = itemView.findViewById(R.id.otherTextView);
+        otherTextView.setMovementMethod(new ScrollingMovementMethod());
+        otherTextView.setSelected(true);
         durationTextView = itemView.findViewById(R.id.durationTextView);
         button = itemView.findViewById(R.id.playButton);
     }

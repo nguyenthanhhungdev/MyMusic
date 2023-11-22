@@ -58,13 +58,25 @@
             android:layout_height="match_parent"
             android:scaleType="center"
             android:layout_marginTop="20dp"
-            android:id="@+id/imageView"
+            android:id="@+id/imageView2"
+            android:alpha="0.5"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             />
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_alignParentBottom="true"
             android:id="@+id/imageViewGradient"
+            />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:scaleType="center"
+            android:id="@+id/imageView"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+
             />
     </RelativeLayout>
 
@@ -78,8 +90,10 @@
         android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="@color/white"
-        android:ellipsize="end"
         android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         />
     <TextView
         android:layout_width="match_parent"

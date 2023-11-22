@@ -113,28 +113,32 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         // Kiểm tra xem có bài hát nào đang phát không
         isPlaying = mediaPlayer.isPlaying();
 
-        if (isPlaying) {
-            // Nếu có bài hát đang phát
-            if (playingPosition != currentPosition) {
-                // Dừng bài hát hiện tại
-                mediaPlayer.stop();
-                mediaPlayer.release();
+         try {
+            if (isPlaying) {
+                // Nếu có bài hát đang phát và khác bài hát muốn chơi hiện tại
+                if (playingPosition != currentPosition) {
+                    // Dừng bài hát đang phát
+                    mediaPlayer.stop();
+//                mediaPlayer.release();
+                    mediaPlayer.reset();
 //                Chơi bài hat mới
-                mediaPlayer = MediaPlayer.create(context, uri);
-                playMusic(mediaPlayer);
+                    mediaPlayer = MediaPlayer.create(context, uri);
+                    playMusic(mediaPlayer);
+                } else {
+                    // Dừng bài hát hiện tại nếu đang phát
+                    pauseMusic(mediaPlayer);
+                }
             } else {
-                // Dừng bài hát hiện tại nếu đang phát
-                pauseMusic(mediaPlayer);
+                // Nếu không có bài hát nào đang phát
+                if (playingPosition != currentPosition) {
+                    // Nếu bài hát hiện tại khác với bài hát trước đó, tạo mới MediaPlayer
+                    mediaPlayer = MediaPlayer.create(context, uri);
+                }
+                playMusic(mediaPlayer);
             }
-        } else {
-            // Nếu không có bài hát nào đang phát
-            if (playingPosition != currentPosition) {
-                // Nếu bài hát hiện tại khác với bài hát trước đó, tạo mới MediaPlayer
-                mediaPlayer = MediaPlayer.create(context, uri);
-            }
-            playMusic(mediaPlayer);
-        }
+        } catch (IOException e) {
 
+         }
         // Lưu lại holder cũ
         if (isPlaying || playingPosition != currentPosition) {
             // Nếu có bài hát đang phát hoặc bài hát hiện tại khác với bài hát trước đó
@@ -145,7 +149,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         }
 //        Cập nhật giao diện
         holder.getButton().setImageResource(isPlaying ? R.drawable.baseline_pause : R.drawable.baseline_play_arrow);
-
+//        Lưu lại vị trí bài hát đang phát
         playingPosition = currentPosition;
     }
 
@@ -154,7 +158,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         isPlaying = mediaPlayer.isPlaying();
     }
 
-    private void playMusic(MediaPlayer mediaPlayer) {
+    private void playMusic(MediaPlayer mediaPlayer) throws IOException {
+        mediaPlayer.prepare();
         mediaPlayer.start();
         isPlaying = mediaPlayer.isPlaying();
     }
