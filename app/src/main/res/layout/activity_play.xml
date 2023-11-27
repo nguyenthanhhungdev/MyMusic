@@ -23,7 +23,7 @@
             android:src="@drawable/baseline_chevron"
             android:layout_centerVertical="true"
             android:background="@drawable/rounded_transparent_background"
-            />
+            android:contentDescription="BackPress" />
 
         <TextView
             android:layout_width="match_parent"
@@ -44,7 +44,7 @@
             android:layout_centerVertical="true"
             android:src="@drawable/baseline_menu"
             android:background="@drawable/rounded_transparent_background"
-            />
+            android:contentDescription="Menu" />
 
         ></RelativeLayout>
     <RelativeLayout
@@ -62,13 +62,13 @@
             android:alpha="0.5"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            />
+            android:contentDescription="ImageMusic" />
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_alignParentBottom="true"
             android:id="@+id/imageViewGradient"
-            />
+            android:contentDescription="Gradient" />
         <com.google.android.material.imageview.ShapeableImageView
             android:scaleType="center"
             android:id="@+id/imageView"
@@ -125,7 +125,7 @@
             android:id="@+id/shuffleButton"
             android:src="@drawable/baseline_shuffle_off"
             android:background="@drawable/rounded_transparent_background"
-            />
+            android:contentDescription="Shuffle" />
         <ImageButton
             android:layout_width="70dp"
             android:layout_height="50dp"
@@ -135,7 +135,7 @@
             android:background="@drawable/rounded_transparent_background"
             android:layout_centerVertical="true"
             android:src="@drawable/baseline_skip_previous_24"
-            />
+            android:contentDescription="Previous" />
 
         <ImageButton
             android:layout_width="100dp"
@@ -146,7 +146,7 @@
             android:layout_centerVertical="true"
             android:foregroundGravity="center_horizontal"
             android:src="@drawable/baseline_play_arrow"
-            ></ImageButton>
+            android:contentDescription="Play"></ImageButton>
 
         <ImageButton
             android:layout_width="70dp"
@@ -156,7 +156,7 @@
             android:layout_centerVertical="true"
             android:background="@drawable/rounded_transparent_background"
             android:src="@drawable/baseline_skip_next"
-            />
+            android:contentDescription="Next" />
         <ImageButton
             android:layout_width="70dp"
             android:layout_height="50dp"
@@ -166,7 +166,8 @@
             android:id="@+id/repeatButton"
             android:layout_centerVertical="true"
             android:background="@drawable/rounded_transparent_background"
-            android:src="@drawable/baseline_repeat_off"/>
+            android:src="@drawable/baseline_repeat_off"
+            android:contentDescription="Repeat" />
     </RelativeLayout>
 
     <RelativeLayout

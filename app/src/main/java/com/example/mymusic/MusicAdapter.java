@@ -67,11 +67,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
             throw new RuntimeException(e);
         }
 
-        String path = musicFiles.get(position).getPath();
+        String album = musicFiles.get(position).getAlbum();
         String artist = musicFiles.get(position).getArtist();
 
         if (artist.equals("<unknown>")) {
-            holder.getOtherTextView().setText(path);
+            holder.getOtherTextView().setText(album);
         } else {
             holder.getOtherTextView().setText(artist);
         }
