@@ -1,4 +1,4 @@
-package com.example.mymusic;
+package com.example.mymusic.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.mymusic.Activity.PlayActivity;
+import com.example.mymusic.Holder.MyViewHolder;
+import com.example.mymusic.File.MusicFiles;
+import com.example.mymusic.R;
 
 import java.io.IOException;
 import java.util.ArrayList;

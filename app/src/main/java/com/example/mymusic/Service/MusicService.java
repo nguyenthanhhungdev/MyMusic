@@ -10,12 +10,7 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.example.mymusic.MainActivity;
-import com.example.mymusic.MusicAdapter;
-
-import java.security.Provider;
-import java.util.List;
-import java.util.Map;
+import com.example.mymusic.Adapter.MusicAdapter;
 
 public class MusicService extends Service {
     private MediaPlayer mediaPlayer;

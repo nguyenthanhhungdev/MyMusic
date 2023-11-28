@@ -1,4 +1,4 @@
-package com.example.mymusic;
+package com.example.mymusic.Holder;
 
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.mymusic.R;
 
 // Tạo một đối tượng đề giữ các TextView và ImageView
 public class MyViewHolder extends RecyclerView.ViewHolder {

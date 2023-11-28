@@ -1,6 +1,6 @@
-package com.example.mymusic;
+package com.example.mymusic.Fragment;
 
-import static com.example.mymusic.MainActivity.musicFiles;
+import static com.example.mymusic.Activity.MainActivity.musicFiles;
 
 import android.os.Bundle;
 
@@ -14,6 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+
+import com.example.mymusic.Adapter.MusicAdapter;
+import com.example.mymusic.R;
 
 /**
  * A simple {@link Fragment} subclass.

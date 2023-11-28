@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -7,7 +8,7 @@
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:src="@drawable/img"
-        android:id="@+id/imageView"
+        android:id="@+id/imageViewPlaying"
         ></com.google.android.material.imageview.ShapeableImageView>
 
     <ProgressBar
@@ -15,13 +16,13 @@
         android:layout_width="wrap_content"
         android:layout_height="5dp"
         android:id="@+id/thanhProgress"
-        android:layout_toEndOf="@id/imageView"
+        android:layout_toEndOf="@id/imageViewPlaying"
         >
     </ProgressBar>
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/imageView"
+        android:layout_toEndOf="@+id/imageViewPlaying"
         android:layout_below="@+id/thanhProgress"
         android:layout_marginTop="5dp"
         android:id="@+id/inforLayout"
@@ -29,14 +30,22 @@
         <TextView
             android:layout_width="100dp"
             android:layout_height="30dp"
-            android:id="@+id/songNameTextView"
+            android:id="@+id/songNamePlaying"
             ></TextView>
         <TextView
             android:layout_width="70dp"
             android:layout_height="30dp"
-            android:layout_below="@+id/songNameTextView"
+            android:layout_below="@+id/songNamePlaying"
             android:id="@+id/otherInforTextView"
             ></TextView>
     </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonPlay"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        app:srcCompat="@drawable/baseline_play_arrow"
+        android:layout_alignParentEnd="true"
+        />
 
 </RelativeLayout>

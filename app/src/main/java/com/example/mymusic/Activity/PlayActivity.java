@@ -1,10 +1,10 @@
-package com.example.mymusic;
+package com.example.mymusic.Activity;
 
-import static com.example.mymusic.MainActivity.musicFiles;
-import static com.example.mymusic.MainActivity.repeatBoolean;
-import static com.example.mymusic.MainActivity.shuffleBoolean;
-import static com.example.mymusic.MusicAdapter.getMediaPlayer;
-import static com.example.mymusic.MusicAdapter.setMediaPlayer;
+import static com.example.mymusic.Activity.MainActivity.musicFiles;
+import static com.example.mymusic.Activity.MainActivity.repeatBoolean;
+import static com.example.mymusic.Activity.MainActivity.shuffleBoolean;
+import static com.example.mymusic.Adapter.MusicAdapter.getMediaPlayer;
+import static com.example.mymusic.Adapter.MusicAdapter.setMediaPlayer;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +19,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -28,7 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.color.utilities.CorePalette;
+import com.example.mymusic.Adapter.MusicAdapter;
+import com.example.mymusic.File.MusicFiles;
+import com.example.mymusic.R;
 
 import java.util.Random;
 

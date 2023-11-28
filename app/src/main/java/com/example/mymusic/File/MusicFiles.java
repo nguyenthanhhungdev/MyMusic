@@ -1,4 +1,4 @@
-package com.example.mymusic;
+package com.example.mymusic.File;
 
 public class MusicFiles {
     private String path;

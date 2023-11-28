@@ -1,4 +1,4 @@
-package com.example.mymusic;
+package com.example.mymusic.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +13,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import com.example.mymusic.File.MusicFiles;
+import com.example.mymusic.Fragment.MySongFragment;
+import com.example.mymusic.R;
+import com.example.mymusic.Fragment.SongsFragment;
+import com.example.mymusic.Adapter.ViewPaperAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    static ArrayList<MusicFiles> musicFiles;
+    public static ArrayList<MusicFiles> musicFiles;
     static boolean shuffleBoolean = false, repeatBoolean = false;
     private static final int REQUESTCODE = 1;
     @Override

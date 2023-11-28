@@ -7,7 +7,7 @@
     android:background="@color/DenTrongSuot"
     android:id="@+id/playActivity"
     android:orientation="vertical"
-    tools:context=".PlayActivity">
+    tools:context=".Activity.PlayActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
