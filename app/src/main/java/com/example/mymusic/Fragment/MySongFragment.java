@@ -7,6 +7,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainer;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,7 +30,7 @@ public class MySongFragment extends Fragment {
     private RecyclerView recyclerView;
     private MusicAdapter musicAdapter;
     private ImageButton button;
-
+    public static View fragmentContainer;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,6 +39,7 @@ public class MySongFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private static FragmentManager fragmentManager;
 
     public MySongFragment() {
         // Required empty public constructor
@@ -87,8 +91,27 @@ public class MySongFragment extends Fragment {
             musicAdapter = new MusicAdapter(getContext(), musicFiles);
             recyclerView.setAdapter(musicAdapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
-            musicAdapter.notifyDataSetChanged();
         }
+        fragmentContainer = view.findViewById(R.id.fragment_container_view);
+        fragmentManager = getChildFragmentManager();
 
+    }
+
+    public static void popUpNowPlying() {
+        NowPlaying fragment = new NowPlaying();
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        // Thêm hoặc thay thế Fragment trong container (FrameLayout) trong layout của Activity
+        transaction.replace(R.id.fragment_container_view, fragment); // R.id.fragment_container là ID của FrameLayout
+
+        transaction.addToBackStack(null);
+        // Commit giao dịch
+        transaction.commit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

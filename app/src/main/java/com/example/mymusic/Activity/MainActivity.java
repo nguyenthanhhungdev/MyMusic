@@ -3,6 +3,7 @@ package com.example.mymusic.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -15,6 +16,7 @@ import android.provider.MediaStore;
 
 import com.example.mymusic.File.MusicFiles;
 import com.example.mymusic.Fragment.MySongFragment;
+import com.example.mymusic.Fragment.NowPlaying;
 import com.example.mymusic.R;
 import com.example.mymusic.Fragment.SongsFragment;
 import com.example.mymusic.Adapter.ViewPaperAdapter;
@@ -27,6 +29,11 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<MusicFiles> musicFiles;
     static boolean shuffleBoolean = false, repeatBoolean = false;
     private static final int REQUESTCODE = 1;
+    public static FragmentManager fragmentManager;
+    {
+        fragmentManager = getSupportFragmentManager();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

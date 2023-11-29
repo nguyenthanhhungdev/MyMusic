@@ -17,10 +17,11 @@
     <androidx.fragment.app.FragmentContainerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/recyclerViewSong"
         android:id="@+id/fragment_container_view"
+        android:layout_alignParentBottom="true"
         android:tag="now_playing_music"
-        android:visibility="gone"
+        name="com.example.mymusic.Fragment.NowPlaying"
+        tools:layout="@layout/fragment_now_playing"
         />
 
 

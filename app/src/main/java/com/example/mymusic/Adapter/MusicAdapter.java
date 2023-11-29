@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.mymusic.Activity.PlayActivity;
+import com.example.mymusic.Fragment.MySongFragment;
 import com.example.mymusic.Holder.MyViewHolder;
 import com.example.mymusic.File.MusicFiles;
 import com.example.mymusic.R;
@@ -26,10 +27,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private final Context context; // biến để truy cập tới các dữ liệu của giao diện gọi tới
     private final ArrayList<MusicFiles> musicFiles;
     private static MediaPlayer mediaPlayer = new MediaPlayer();
-    private MyViewHolder oldViewHolder;
     private static int playingPosition = -1; // position của bài hát đang phát
     private boolean isPlaying;
     private Uri uri;
+    private MyViewHolder oldViewHolder;
 
     public MusicAdapter(Context context, ArrayList<MusicFiles> musicFiles) {
         this.context = context;
@@ -56,8 +57,9 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         holder.getNumTextView().setText(s_position);
 
 //        holder.getButton().setTag(R.drawable.baseline_play_arrow);
+        byte[] image;
         try {
-            byte[] image = getSongImage(musicFiles.get(position).getPath());
+            image = getSongImage(musicFiles.get(position).getPath());
             if (image != null) {
                 Glide.with(context).asBitmap()
                         .load(image)
@@ -156,6 +158,18 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         holder.getButton().setImageResource(isPlaying ? R.drawable.baseline_pause : R.drawable.baseline_play_arrow);
 //        Lưu lại vị trí bài hát đang phát
         playingPosition = currentPosition;
+
+        /**
+         * Khi nhấn vào button thì Sẽ thực hiện gọi transaction để thêm vao fragment mysong
+         * Sử dụng hàm static vì dẽ không cần phải gọi tạo mới 1 instance của mysong (hàm popUp phải nằm trong mysong mới có thể sử dụng
+         * FragmentManager
+         *
+         * */
+//        Popup fragment NowPlaying
+        MySongFragment.popUpNowPlying();
+//        if (MySongFragment.fragmentContainer != null) {
+//            MySongFragment.fragmentContainer.setVisibility(View.VISIBLE);
+//        }
     }
 
     private void pauseMusic(MediaPlayer mediaPlayer) {
@@ -164,7 +178,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
     }
 
     private void playMusic(MediaPlayer mediaPlayer) throws IOException {
-        mediaPlayer.prepare();
         mediaPlayer.start();
         isPlaying = mediaPlayer.isPlaying();
     }

@@ -2,19 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:src="@drawable/img"
         android:id="@+id/imageViewPlaying"
+        app:shapeAppearanceOverlay="@drawable/style_round_conner"
         ></com.google.android.material.imageview.ShapeableImageView>
 
     <ProgressBar
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="5dp"
+        android:layout_height="3dp"
         android:id="@+id/thanhProgress"
         android:layout_toEndOf="@id/imageViewPlaying"
         >
@@ -24,27 +26,39 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/imageViewPlaying"
         android:layout_below="@+id/thanhProgress"
-        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
         android:id="@+id/inforLayout"
         >
         <TextView
-            android:layout_width="100dp"
-            android:layout_height="30dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
             android:id="@+id/songNamePlaying"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:scrollbars="horizontal"
+            android:autoSizeTextType="uniform"
             ></TextView>
         <TextView
-            android:layout_width="70dp"
-            android:layout_height="30dp"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/songNamePlaying"
             android:id="@+id/otherInforTextView"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:scrollbars="horizontal"
+            android:autoSizeTextType="uniform"
             ></TextView>
     </RelativeLayout>
 
     <ImageButton
         android:id="@+id/imageButtonPlay"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        app:srcCompat="@drawable/baseline_play_arrow"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        app:srcCompat="@drawable/baseline_pause"
         android:layout_alignParentEnd="true"
         />
 
