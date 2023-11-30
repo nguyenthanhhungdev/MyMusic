@@ -99,6 +99,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
              * */
             playingPosition = currentPosition;
             holder.getButton().setImageResource(R.drawable.baseline_pause);
+            MySongFragment.popUpNowPlying();
         });
 
     }
@@ -162,7 +163,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         /**
          * Khi nhấn vào button thì Sẽ thực hiện gọi transaction để thêm vao fragment mysong
          * Sử dụng hàm static vì dẽ không cần phải gọi tạo mới 1 instance của mysong (hàm popUp phải nằm trong mysong mới có thể sử dụng
-         * FragmentManager
+         * FragmentManager)
          *
          * */
 //        Popup fragment NowPlaying

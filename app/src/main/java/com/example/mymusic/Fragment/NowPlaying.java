@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class NowPlaying extends Fragment {
     private ImageView imageView;
     private ImageButton imageButtonPlay;
     private ProgressBar progressBar;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,9 +82,24 @@ public class NowPlaying extends Fragment {
                     MusicAdapter.getMediaPlayer().start();
                 }
             });
+
+            int durationMax = MusicAdapter.getMediaPlayer().getDuration();
+            progressBar.setMax(durationMax);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        Handler handler = new Handler();
+        this.requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (MusicAdapter.getMediaPlayer() != null) {
+                    int currentPostion = MusicAdapter.getMediaPlayer().getCurrentPosition();
+                    progressBar.setProgress(currentPostion);
+                }
+                handler.postDelayed(this, 100);
+            }
+        });
     }
 
     public byte[] getImage(String path) throws IOException {

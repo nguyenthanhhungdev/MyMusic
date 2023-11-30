@@ -15,11 +15,12 @@
 
     <ProgressBar
         style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="340dp"
         android:layout_height="3dp"
         android:id="@+id/thanhProgress"
         android:layout_toEndOf="@id/imageViewPlaying"
-        >
+        android:progressTint="@android:color/white"
+      >
     </ProgressBar>
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -33,6 +34,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/songNamePlaying"
+            android:textColor="@color/white"
             android:singleLine="true"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
@@ -45,6 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/songNamePlaying"
             android:id="@+id/otherInforTextView"
+            android:textColor="@color/white"
             android:singleLine="true"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
@@ -59,6 +62,7 @@
         android:layout_width="38dp"
         android:layout_height="38dp"
         app:srcCompat="@drawable/baseline_pause"
+        android:background="@drawable/rounded_corner"
         android:layout_alignParentEnd="true"
         />
 

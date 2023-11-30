@@ -65,6 +65,10 @@ public class PlayActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (getMediaPlayer() != null && fromUser) {
                     getMediaPlayer().seekTo(progress * 1000);
+                    /**
+                    * Phương thức seekTo yêu cầu một giá trị thời gian trong đơn vị mili-giây.
+                    * Nếu giá trị progress đang được tính bằng giây, việc nhân với 1000 chuyển đổi nó thành
+                    *  mili-giây trước khi áp dụng cho seekTo.*/
                 }
             }
 
@@ -274,13 +278,7 @@ public class PlayActivity extends AppCompatActivity {
             @Override
             public void run() {
                 super.run();
-//                    playButton.setOnClickListener(e -> playPauseBtnClicked());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        playButton.setOnClickListener(e -> playPauseBtnClicked());
-                    }
-                });
+                    playButton.setOnClickListener(e -> playPauseBtnClicked());
             }
         };
         playThread.start();
