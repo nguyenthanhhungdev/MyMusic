@@ -352,6 +352,10 @@ public class PlayActivity extends AppCompatActivity {
             Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                 @Override
                 public void onGenerated(@Nullable Palette palette) {
+                    /**
+                     * palette.getDominantSwatch();
+                     * Lấy màu chủ đạo của 1 bức ảnh
+                     * */
                     Palette.Swatch swatch = palette.getDominantSwatch();
                     if (swatch != null) {
                         ImageView viewGradient = findViewById(R.id.imageViewGradient);
