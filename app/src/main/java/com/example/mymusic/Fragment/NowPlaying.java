@@ -42,7 +42,7 @@ public class NowPlaying extends Fragment {
     private ImageButton imageButtonPlay;
     private ProgressBar progressBar;
     private RelativeLayout relativeLayout;
-    private byte[] image;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -88,18 +88,7 @@ public class NowPlaying extends Fragment {
                 handler.postDelayed(this, 100);
             }
         });
-        Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-            @Override
-            public void onGenerated(@Nullable Palette palette) {
-                Palette.Swatch swatch = palette.getDominantSwatch();
-                if (swatch != null){
-                    GradientDrawable gradientDrawable1 = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                            new int[]{swatch.getRgb(), swatch.getRgb()});
-                    relativeLayout.setBackground(gradientDrawable1);
-                }
-            }
-        });
+
 
         songNameTextView.setOnTouchListener(new View.OnTouchListener() {
             private float startX, startY;
@@ -147,6 +136,7 @@ public class NowPlaying extends Fragment {
         songNameTextView.setText(title);
         otherInforTextView.setText(otherInfor);
 
+        byte[] image;
         try {
             image = getImage(musicFiles.get(MusicAdapter.getPlayingPosition()).getPath());
             if (image != null) {
@@ -165,6 +155,19 @@ public class NowPlaying extends Fragment {
         }
         int durationMax = MusicAdapter.getMediaPlayer().getDuration();
         progressBar.setMax(durationMax);
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+            @Override
+            public void onGenerated(@Nullable Palette palette) {
+                Palette.Swatch swatch = palette.getDominantSwatch();
+                if (swatch != null){
+                    GradientDrawable gradientDrawable1 = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                            new int[]{swatch.getRgb(), swatch.getRgb()});
+                    relativeLayout.setBackground(gradientDrawable1);
+                }
+            }
+        });
     }
 
     private void playNew(int newPosition) {
