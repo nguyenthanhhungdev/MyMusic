@@ -29,7 +29,6 @@ import androidx.fragment.app.Fragment;
 import androidx.palette.graphics.Palette;
 
 import com.bumptech.glide.Glide;
-import com.example.mymusic.Activity.MainActivity;
 import com.example.mymusic.Adapter.MusicAdapter;
 import com.example.mymusic.File.MusicFiles;
 import com.example.mymusic.R;
@@ -46,8 +45,7 @@ public class NowPlaying extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_now_playing, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_now_playing, container, false);
     }
 
     @Override
@@ -111,14 +109,14 @@ public class NowPlaying extends Fragment {
                             getMediaPlayer().stop();
                             getMediaPlayer().reset();
                             getMediaPlayer().release();
+                            int newPosition;
                             if (deltaX > 0) { // Vuốt sang phải
-                                int newPosition = MusicAdapter.getPlayingPosition() - 1;
-                                playNew(newPosition);
+                                newPosition = MusicAdapter.getPlayingPosition() - 1;
                             } else {
                                 // Vuốt sang trái
-                                int newPosition = MusicAdapter.getPlayingPosition() + 1;
-                                playNew(newPosition);
+                                newPosition = MusicAdapter.getPlayingPosition() + 1;
                             }
+                            playNew(newPosition);
                             return true; // Đã xử lý sự kiện vuốt ngang
                         }
                         break;
@@ -140,11 +138,11 @@ public class NowPlaying extends Fragment {
         try {
             image = getImage(musicFiles.get(MusicAdapter.getPlayingPosition()).getPath());
             if (image != null) {
-                Glide.with(getContext()).asBitmap()
+                Glide.with(requireContext()).asBitmap()
                         .load(image)
                         .into(imageView);
             } else {
-                Glide.with(getContext())
+                Glide.with(requireContext())
                         .load(R.drawable.img)
                         .into(imageView);
             }
@@ -156,16 +154,15 @@ public class NowPlaying extends Fragment {
         int durationMax = MusicAdapter.getMediaPlayer().getDuration();
         progressBar.setMax(durationMax);
 
+        assert image != null;
         Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-            @Override
-            public void onGenerated(@Nullable Palette palette) {
-                Palette.Swatch swatch = palette.getDominantSwatch();
-                if (swatch != null){
-                    GradientDrawable gradientDrawable1 = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                            new int[]{swatch.getRgb(), swatch.getRgb()});
-                    relativeLayout.setBackground(gradientDrawable1);
-                }
+        Palette.from(bitmap).generate(palette -> {
+            assert palette != null;
+            Palette.Swatch swatch = palette.getDominantSwatch();
+            if (swatch != null){
+                GradientDrawable gradientDrawable1 = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                        new int[]{swatch.getRgb(), swatch.getRgb()});
+                relativeLayout.setBackground(gradientDrawable1);
             }
         });
     }
