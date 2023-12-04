@@ -16,21 +16,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.mymusic.Activity.PlayActivity;
 import com.example.mymusic.Fragment.MySongFragment;
-import com.example.mymusic.Holder.MyViewHolder;
+import com.example.mymusic.Holder.MusicViewHolder;
 import com.example.mymusic.File.MusicFiles;
 import com.example.mymusic.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
+public class MusicAdapter extends RecyclerView.Adapter<MusicViewHolder> {
     private final Context context; // biến để truy cập tới các dữ liệu của giao diện gọi tới
     private final ArrayList<MusicFiles> musicFiles;
     private static MediaPlayer mediaPlayer = new MediaPlayer();
     private static int playingPosition = -1; // position của bài hát đang phát
     private boolean isPlaying;
     private Uri uri;
-    private MyViewHolder oldViewHolder;
+    private MusicViewHolder oldViewHolder;
 
     public MusicAdapter(Context context, ArrayList<MusicFiles> musicFiles) {
         this.context = context;
@@ -39,15 +39,15 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MusicViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.music_item, parent, false);
-        oldViewHolder = new MyViewHolder(view);
-        return new MyViewHolder(view);
+        oldViewHolder = new MusicViewHolder(view);
+        return new MusicViewHolder(view);
     }
 
     //    Gán dữ liệu từ thành phần giao diện vào ViewHolder
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MusicViewHolder holder, int position) {
         int currentPosition = position;
 
         String title = musicFiles.get(position).getTitle();
@@ -104,7 +104,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     }
 
-    private void playThreadBtn(MyViewHolder holder, int position) {
+    private void playThreadBtn(MusicViewHolder holder, int position) {
         Thread playThread = new Thread() {
             @Override
             public void run() {
@@ -115,7 +115,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
         playThread.start();
     }
 
-    private void playPauseBtnClicked(MyViewHolder holder, int currentPosition) {
+    private void playPauseBtnClicked(MusicViewHolder holder, int currentPosition) {
         uri = Uri.parse(musicFiles.get(currentPosition).getPath());
 
         // Kiểm tra xem có bài hát nào đang phát không
@@ -166,11 +166,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MyViewHolder> {
          * FragmentManager)
          *
          * */
-//        Popup fragment NowPlaying
         MySongFragment.popUpNowPlying();
-//        if (MySongFragment.fragmentContainer != null) {
-//            MySongFragment.fragmentContainer.setVisibility(View.VISIBLE);
-//        }
     }
 
     private void pauseMusic(MediaPlayer mediaPlayer) {

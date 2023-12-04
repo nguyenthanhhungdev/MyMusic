@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mymusic.R;
 
 // Tạo một đối tượng đề giữ các TextView và ImageView
-public class MyViewHolder extends RecyclerView.ViewHolder {
+public class MusicViewHolder extends RecyclerView.ViewHolder {
     private ImageView imageView;
     private TextView numTextView, nameTextView, otherTextView, durationTextView;
     private ImageButton button;
 
-    public MyViewHolder(@NonNull View itemView) {
+    public MusicViewHolder(@NonNull View itemView) {
         super(itemView);
         imageView = itemView.findViewById(R.id.imageView);
         numTextView = itemView.findViewById(R.id.numberText);
